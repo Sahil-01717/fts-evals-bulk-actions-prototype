@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTS Evals - User Management Prototype</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Navigation Panel */
+        .sidebar {
+            width: 280px;
+            background-color: #fff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .logo {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .console-title {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .back-link {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        .evaluation-name {
+            padding: 16px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .publish-section {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .needs-met {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .publish-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #7B2CBF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .publish-btn:hover {
+            background-color: #6A1B9A;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .nav-item.active {
+            background-color: #F3E8FF;
+            color: #7B2CBF;
+            font-weight: 500;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            display: inline-block;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .content-body {
+            flex: 1;
+            padding: 24px 32px;
+            overflow-y: auto;
+            overflow-x: visible;
+            position: relative;
+        }
+
+        /* Search Bar */
+        /* Invite Users Section */
+        .invite-section {
+            margin-bottom: 32px;
+        }
+
+        .invite-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .invite-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .invite-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #7B2CBF;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+
+        .invite-input:focus {
+            outline: none;
+            border-color: #6A1B9A;
+            box-shadow: 0 0 0 3px rgba(123, 44, 191, 0.1);
+        }
+
+        .upload-csv-btn {
+            padding: 12px 24px;
+            background-color: white;
+            color: #7B2CBF;
+            border: 2px solid #7B2CBF;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .upload-csv-btn:hover {
+            background-color: #F3E8FF;
+        }
+
+        .invite-microcopy {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Status Statistics Cards */
+        .stats-cards {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 180px;
+            padding: 16px 20px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            color: #7B2CBF;
+            font-weight: 600;
+        }
+
+        .info-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1px solid #7B2CBF;
+            background-color: white;
+            color: #7B2CBF;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .info-btn:hover {
+            background-color: #7B2CBF;
+            color: white;
+        }
+
+        .tooltip {
+            position: fixed;
+            width: 280px;
+            background-color: #333;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 100000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 20px;
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip-content {
+            margin: 0;
+        }
+
+        .tooltip-content strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Table Header Zone */
+        .table-header-zone {
+            background-color: #f9f9f9;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .table-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .table-filters {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .table-header-zone .three-dot-menu {
+            margin-left: 0;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 250px;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #7B2CBF;
+        }
+
+        .filter-dropdown {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        /* Table Controls - Removed, moved to header */
+
+        .three-dot-menu {
+            position: relative;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .three-dot-menu:hover {
+            background-color: #f5f5f5;
+        }
+
+        .three-dot-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .three-dot-icon::before {
+            content: '⋯';
+            font-size: 20px;
+            color: #666;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 10000;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block !important;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            position: relative;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .submenu {
+            display: none;
+            position: absolute;
+            right: 100%;
+            top: 0;
+            margin-right: 4px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 180px;
+            z-index: 10001;
+        }
+        
+        .dropdown-item.has-submenu:hover .submenu {
+            display: block !important;
+        }
+
+        .submenu-item {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .submenu-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Table */
+        .table-wrapper {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f9f9f9;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .checkbox-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .selection-count {
+            font-size: 12px;
+            color: #666;
+            font-weight: normal;
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-complete {
+            color: #10B981;
+            background-color: #D1FAE5;
+        }
+
+        .status-sent {
+            color: #6B7280;
+            background-color: #F3F4F6;
+        }
+
+        .status-not-sent {
+            color: #6B7280;
+            background-color: #F3F4F6;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            background-color: #F3F4F6;
+            color: #374151;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background-color: #E5E7EB;
+        }
+
+        .action-btn-reinvite {
+            padding: 6px 12px;
+            background-color: #7B2CBF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 8px;
+        }
+
+        .action-btn-reinvite:hover {
+            background-color: #6A1B9A;
+        }
+
+        /* Sortable column styles */
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 24px;
+        }
+
+        th.sortable:hover {
+            background-color: #f0f0f0;
+        }
+
+        .sort-indicator {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #7B2CBF;
+        }
+
+        .sort-indicator::after {
+            content: '▼';
+        }
+
+        th.sortable.sort-asc .sort-indicator::after {
+            content: '▲';
+        }
+
+        th.sortable.sort-desc .sort-indicator::after {
+            content: '▼';
+        }
+
+        .action-remove {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #6B7280;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .action-remove:hover {
+            background-color: #4B5563;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background-color: #f5f5f5;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-page {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pagination-limit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .limit-dropdown {
+            padding: 6px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #7B2CBF;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #6A1B9A;
+        }
+
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #10B981;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 3000;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.error {
+            background: #EF4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">TELUS International</div>
+                <div class="console-title">FT Studio Console</div>
+            </div>
+            <a href="#" class="back-link">← Back to Evaluation Details</a>
+            <div class="evaluation-name">Internal-Team-Sa...</div>
+            <div class="publish-section">
+                <div class="needs-met">Needs Met</div>
+                <div class="description">Publish the latest version of Exam to reflect the new settings version created.</div>
+                <button class="publish-btn">Publish Exam V4</button>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    Exam Setup
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    More Settings
+                </div>
+                <div class="nav-item active" id="navUserManagement" data-page="userManagement">
+                    <span class="nav-icon">👥</span>
+                    User Management
+                </div>
+                <div class="nav-item" id="navAttemptManagement" data-page="attemptManagement">
+                    <span class="nav-icon">💎</span>
+                    Attempt Management
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                Sahil Choudhary ▼
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- User Management Page -->
+            <div id="userManagementPage" class="page-content">
+                <div class="content-header">
+                    <div class="page-title">User Management</div>
+                    <div class="page-subtitle">Manage user attempts and invites</div>
+                </div>
+                <div class="content-body">
+                <!-- Invite Users Section -->
+                <div class="invite-section">
+                    <div class="invite-title">Invite users to this exam</div>
+                    <div class="invite-input-group">
+                        <input 
+                            type="text" 
+                            class="invite-input" 
+                            placeholder="Add user by email…"
+                            id="addUsersInput"
+                        />
+                        <button class="upload-csv-btn" id="uploadCsvBtn">Upload CSV</button>
+                    </div>
+                    <div class="invite-microcopy">Enter an email and press Enter to send invite</div>
+                </div>
+
+                <!-- Status Statistics Cards -->
+                <div class="stats-cards" id="statsCards">
+                    <div class="stat-card">
+                        <div class="stat-label">Users Added</div>
+                        <div class="stat-value" id="statUsersAdded">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Invite Not Sent</div>
+                        <div class="stat-value" id="statNotSent">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Invite Sent</div>
+                        <div class="stat-value" id="statSent">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">
+                            Attempt In Progress
+                            <button class="info-btn" id="attemptInProgressInfo" title="Click for more information">
+                                <span>i</span>
+                            </button>
+                        </div>
+                        <div class="stat-value" id="statInProgress">0</div>
+                        <div class="tooltip" id="attemptInProgressTooltip">
+                            <div class="tooltip-content">
+                                <strong>Note:</strong> Statistics are calculated based on the first attempt only. Subsequent retakes are not included in these counts.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">
+                            Attempt Complete
+                            <button class="info-btn" id="attemptCompleteInfo" title="Click for more information">
+                                <span>i</span>
+                            </button>
+                        </div>
+                        <div class="stat-value" id="statComplete">0</div>
+                        <div class="tooltip" id="attemptCompleteTooltip">
+                            <div class="tooltip-content">
+                                <strong>Note:</strong> Statistics are calculated based on the first attempt only. Subsequent retakes are not included in these counts.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table with Header Zone -->
+                <div class="table-wrapper">
+                    <!-- Table Header Zone with Filters -->
+                    <div class="table-header-zone">
+                        <div class="table-header-top">
+                            <div class="table-title">Users Added</div>
+                            <div class="table-filters">
+                                <input 
+                                    type="text" 
+                                    class="filter-input" 
+                                    placeholder="Filter by email…"
+                                    id="filterUsersInput"
+                                />
+                                <select class="filter-dropdown" id="statusFilter">
+                                    <option value="">Filter by status</option>
+                                    <option value="all">All</option>
+                                    <option value="not-sent">Invite Not Sent</option>
+                                    <option value="sent">Invite Sent</option>
+                                    <option value="in-progress">Attempt In Progress</option>
+                                    <option value="complete">Attempt Complete</option>
+                                </select>
+                                <div class="three-dot-menu" id="threeDotMenu">
+                                    <div class="three-dot-icon"></div>
+                                    <div class="dropdown-menu" id="dropdownMenu">
+                                        <div class="dropdown-item has-submenu">
+                                            Invite Users
+                                            <div class="submenu">
+                                                <div class="submenu-item" id="inviteSelected">Selected users</div>
+                                                <div class="submenu-item" id="inviteAllUninvited">All un-invited users</div>
+                                            </div>
+                                        </div>
+                                        <div class="dropdown-item has-submenu">
+                                            Export User List
+                                            <div class="submenu">
+                                                <div class="submenu-item" id="exportSelected">Selected users</div>
+                                                <div class="submenu-item" id="exportAll">All users</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div class="checkbox-header">
+                                            <input type="checkbox" id="selectAll" />
+                                            <span class="selection-count" id="selectionCount">(0 selected)</span>
+                                        </div>
+                                    </th>
+                                    <th>User Email ID ▼</th>
+                                    <th>Invite By</th>
+                                    <th class="sortable" id="sortInviteDate">
+                                        Invite Sent At
+                                        <span class="sort-indicator"></span>
+                                    </th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <div class="pagination-controls">
+                        <button class="pagination-btn" id="prevPage" disabled>←</button>
+                        <span class="pagination-page">Page <span id="currentPage">1</span></span>
+                        <button class="pagination-btn" id="nextPage">→</button>
+                    </div>
+                    <div class="pagination-limit">
+                        <span>Show</span>
+                        <select class="limit-dropdown" id="pageLimit">
+                            <option value="10">10</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="500" selected>500</option>
+                            <option value="1000">1000</option>
+                            <option value="2000">2000</option>
+                        </select>
+                        <span>per page</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Attempt Management Page -->
+            <div id="attemptManagementPage" class="page-content" style="display: none;">
+                <div class="content-header">
+                    <div class="page-title">Attempt Management</div>
+                    <div class="page-subtitle">View and manage exam attempts</div>
+                </div>
+                <div class="content-body">
+                    <!-- Status Statistics Cards for Attempt Management -->
+                    <div class="stats-cards" id="attemptStatsCards">
+                        <div class="stat-card">
+                            <div class="stat-label">
+                                Total Attempts
+                                <button class="info-btn" id="totalAttemptsInfo" title="Click for more information">
+                                    <span>i</span>
+                                </button>
+                            </div>
+                            <div class="stat-value" id="statTotalAttempts">0</div>
+                            <div class="tooltip" id="totalAttemptsTooltip">
+                                <div class="tooltip-content">
+                                    <strong>Note:</strong> This count includes all attempts across all users, including retakes. Unlike User Management page statistics which only count first attempts.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">In Progress Attempts</div>
+                            <div class="stat-value" id="statInProgressAttempts">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Completed Attempts</div>
+                            <div class="stat-value" id="statCompletedAttempts">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">
+                                Archived Attempts
+                                <button class="info-btn" id="archivedAttemptsInfo" title="Click for more information">
+                                    <span>i</span>
+                                </button>
+                            </div>
+                            <div class="stat-value" id="statArchivedAttempts">0</div>
+                            <div class="tooltip" id="archivedAttemptsTooltip">
+                                <div class="tooltip-content">
+                                    <strong>Note:</strong> These are attempts that were actively in progress when the exam was archived by the Project Manager.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Incomplete Attempts</div>
+                            <div class="stat-value" id="statIncompleteAttempts">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Pass %</div>
+                            <div class="stat-value" id="statPassPercent">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Filters Section (Placeholder for Attempt Management filters) -->
+                    <div class="table-header-zone" style="margin-top: 24px;">
+                        <div class="table-header-top">
+                            <div class="table-title">Attempts</div>
+                            <div class="table-filters">
+                                <input 
+                                    type="text" 
+                                    class="filter-input" 
+                                    placeholder="Search by candidate email…"
+                                    id="filterAttemptsInput"
+                                />
+                                <input 
+                                    type="text" 
+                                    class="filter-input" 
+                                    placeholder="Search By ID"
+                                    id="filterAttemptIdInput"
+                                />
+                                <select class="filter-dropdown" id="attemptStatusFilter">
+                                    <option value="">COMPLETE</option>
+                                    <option value="all">All</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="archived">Archived</option>
+                                    <option value="incomplete">Incomplete</option>
+                                </select>
+                                <button class="upload-csv-btn" id="exportAttemptsBtn">Export Options</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder for Attempt Management Table -->
+                    <div class="table-wrapper" style="margin-top: 0;">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Candidate Email</th>
+                                        <th>Started at</th>
+                                        <th>Status</th>
+                                        <th>Exam Version</th>
+                                        <th>Result</th>
+                                        <th>Score</th>
+                                        <th>Time Taken</th>
+                                        <th>Attempt ID</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attemptTableBody">
+                                    <tr>
+                                        <td colspan="9" style="text-align: center; padding: 40px; color: #666;">
+                                            Attempt Management table content would be displayed here
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Confirmations -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">Confirm Action</div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="confirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div id="toastMessage"></div>
+    </div>
+
+    <script>
+        // Helper function to format date as "1st December 2025"
+        function formatDate(date) {
+            if (!date) return '';
+            const day = date.getDate();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const year = date.getFullYear();
+            
+            let daySuffix;
+            if (day === 1 || day === 21 || day === 31) daySuffix = 'st';
+            else if (day === 2 || day === 22) daySuffix = 'nd';
+            else if (day === 3 || day === 23) daySuffix = 'rd';
+            else daySuffix = 'th';
+            
+            return `${day}${daySuffix} ${monthNames[date.getMonth()]} ${year}`;
+        }
+
+        // Generate random date within last 30 days
+        function getRandomInviteDate() {
+            const daysAgo = Math.floor(Math.random() * 30);
+            const date = new Date();
+            date.setDate(date.getDate() - daysAgo);
+            return date;
+        }
+
+        // Generate realistic user data
+        function generateUserData(count) {
+            const firstNames = ['manogna', 'abilash', 'sahil', 'sagnik', 'raj', 'srinivas', 'mayank', 'ankit', 
+                              'priya', 'rahul', 'neha', 'arjun', 'kavya', 'vikram', 'ananya', 'rohan', 
+                              'divya', 'aditya', 'meera', 'karan', 'sneha', 'varun', 'pooja', 'nitin',
+                              'swati', 'amit', 'deepika', 'suresh', 'kiran', 'mohit', 'radha', 'ajay',
+                              'nisha', 'vivek', 'shreya', 'manoj', 'tanvi', 'gaurav', 'ritu', 'harsh',
+                              'isha', 'yash', 'pallavi', 'siddharth', 'anjali', 'akash', 'sonia', 'pranav'];
+            
+            const lastNames = ['m', 'km01', 'choudhary', 'paul', 'gorhe', 'p01', 'kumar05', 'mundada01',
+                            'sharma', 'patel', 'kumar', 'singh', 'reddy', 'nair', 'rao', 'desai',
+                            'mehta', 'jain', 'gupta', 'verma', 'tiwari', 'mishra', 'shah', 'kapoor',
+                            'agarwal', 'malhotra', 'bansal', 'goyal', 'chopra', 'saxena', 'trivedi', 'joshi'];
+            
+            const inviteBys = ['Sahil', 'Ankit', 'Mayank', 'Raj', 'Priya', 'Rahul'];
+            const statuses = ['not-sent', 'sent', 'in-progress', 'complete'];
+            
+            // Weight statuses to have more realistic distribution
+            const statusWeights = {
+                'not-sent': 0.25,
+                'sent': 0.20,
+                'in-progress': 0.15,
+                'complete': 0.40
+            };
+            
+            const sampleUsers = [];
+            
+            // Add some specific users from screenshot
+            sampleUsers.push(
+                { email: 'manogna.m@telusinternational.com', inviteBy: 'Sahil', status: 'not-sent', inviteSentAt: null, reinviteCount: 0 },
+                { email: 'abilash.km01@telusinternational.com', inviteBy: 'Sahil', status: 'not-sent', inviteSentAt: null, reinviteCount: 0 },
+                { email: 'sahil.choudhary@telusinternational.com', inviteBy: 'Sahil', status: 'complete', inviteSentAt: getRandomInviteDate(), reinviteCount: 0 },
+                { email: 'sagnik.paul@telusinternational.com', inviteBy: 'Sahil', status: 'complete', inviteSentAt: getRandomInviteDate(), reinviteCount: 0 },
+                { email: 'raj.gorhe@telusinternational.com', inviteBy: 'Sahil', status: 'complete', inviteSentAt: getRandomInviteDate(), reinviteCount: 0 },
+                { email: 'srinivas.p01@telusinternational.com', inviteBy: 'Sahil', status: 'sent', inviteSentAt: getRandomInviteDate(), reinviteCount: 0 },
+                { email: 'mayank.kumar05@telusinternational.com', inviteBy: 'Sahil', status: 'complete', inviteSentAt: getRandomInviteDate(), reinviteCount: 0 },
+                { email: 'ankit.mundada01@telusinternational.com', inviteBy: 'Ankit', status: 'complete', inviteSentAt: getRandomInviteDate(), reinviteCount: 0 }
+            );
+            
+            // Track used emails to avoid duplicates
+            const usedEmails = new Set(sampleUsers.map(u => u.email));
+            
+            // Generate remaining users
+            for (let i = sampleUsers.length; i < count; i++) {
+                let email;
+                let attempts = 0;
+                do {
+                    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+                    const numSuffix = Math.random() > 0.7 ? Math.floor(Math.random() * 100) : '';
+                    email = `${firstName}.${lastName}${numSuffix}@telusinternational.com`;
+                    attempts++;
+                } while (usedEmails.has(email) && attempts < 10);
+                
+                if (usedEmails.has(email)) {
+                    // Fallback: add unique number
+                    email = `user${i}@telusinternational.com`;
+                }
+                usedEmails.add(email);
+                
+                // Weighted random status
+                const rand = Math.random();
+                let status = 'complete';
+                let cumulative = 0;
+                for (const [stat, weight] of Object.entries(statusWeights)) {
+                    cumulative += weight;
+                    if (rand <= cumulative) {
+                        status = stat;
+                        break;
+                    }
+                }
+                
+                // Generate invite date if status is not 'not-sent'
+                const inviteSentAt = status !== 'not-sent' ? getRandomInviteDate() : null;
+                
+                sampleUsers.push({
+                    email: email,
+                    inviteBy: inviteBys[Math.floor(Math.random() * inviteBys.length)],
+                    status: status,
+                    inviteSentAt: inviteSentAt,
+                    reinviteCount: 0
+                });
+            }
+            
+            return sampleUsers;
+        }
+        
+        const sampleUsers = generateUserData(500);
+
+        let allUsers = [];
+        let filteredUsers = [];
+        let currentPage = 1;
+        let pageLimit = 500;
+        let selectedUsers = new Set();
+        let sortColumn = null;
+        let sortDirection = 'desc'; // 'desc' or 'asc'
+
+        // Initialize data first
+        allUsers = [...sampleUsers];
+        filteredUsers = [...sampleUsers];
+
+        // Helper functions (must be defined before init)
+        function updateUserCount() {
+            const countElement = document.getElementById('userCount');
+            if (countElement) {
+                countElement.textContent = filteredUsers.length;
+            }
+        }
+
+        function updateStats() {
+            // Update total users added
+            document.getElementById('statUsersAdded').textContent = filteredUsers.length;
+
+            const stats = {
+                'not-sent': 0,
+                'sent': 0,
+                'in-progress': 0,
+                'complete': 0
+            };
+
+            filteredUsers.forEach(user => {
+                if (stats.hasOwnProperty(user.status)) {
+                    stats[user.status]++;
+                }
+            });
+
+            document.getElementById('statNotSent').textContent = stats['not-sent'];
+            document.getElementById('statSent').textContent = stats['sent'];
+            document.getElementById('statInProgress').textContent = stats['in-progress'];
+            document.getElementById('statComplete').textContent = stats['complete'];
+        }
+
+        function updateSelectionCount() {
+            const count = selectedUsers.size;
+            const countElement = document.getElementById('selectionCount');
+            if (countElement) {
+                if (count > 0) {
+                    countElement.textContent = `(${count} selected)`;
+                } else {
+                    countElement.textContent = '(0 selected)';
+                }
+            }
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredUsers.length / pageLimit);
+            const currentPageEl = document.getElementById('currentPage');
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            
+            if (currentPageEl) currentPageEl.textContent = currentPage;
+            if (prevBtn) prevBtn.disabled = currentPage === 1;
+            if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+        }
+
+        function updateSelectAllCheckbox() {
+            const startIndex = (currentPage - 1) * pageLimit;
+            const endIndex = Math.min(startIndex + pageLimit, filteredUsers.length);
+            const pageUsers = filteredUsers.slice(startIndex, endIndex);
+            const allSelected = pageUsers.length > 0 && pageUsers.every(u => selectedUsers.has(u.email));
+            const selectAllCheckbox = document.getElementById('selectAll');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = allSelected;
+            }
+        }
+
+        // Initialize
+        function init() {
+            console.log('Initializing with', allUsers.length, 'users');
+            // Generate attempt data
+            allAttempts = generateAttemptData();
+            filteredAttempts = [...allAttempts];
+            updateUserCount();
+            updateStats();
+            updateAttemptStats();
+            renderTable();
+            setupEventListeners();
+        }
+
+        // Page switching
+        let currentPageView = 'userManagement'; // 'userManagement' or 'attemptManagement'
+
+        function switchPage(page) {
+            currentPageView = page;
+            const userMgmtPage = document.getElementById('userManagementPage');
+            const attemptMgmtPage = document.getElementById('attemptManagementPage');
+            const navUserMgmt = document.getElementById('navUserManagement');
+            const navAttemptMgmt = document.getElementById('navAttemptManagement');
+
+            if (page === 'userManagement') {
+                userMgmtPage.style.display = 'block';
+                attemptMgmtPage.style.display = 'none';
+                navUserMgmt.classList.add('active');
+                navAttemptMgmt.classList.remove('active');
+            } else {
+                userMgmtPage.style.display = 'none';
+                attemptMgmtPage.style.display = 'block';
+                navUserMgmt.classList.remove('active');
+                navAttemptMgmt.classList.add('active');
+                updateAttemptStats();
+                renderAttemptTable();
+            }
+        }
+
+        // Generate attempt data for Attempt Management page
+        function generateAttemptData() {
+            // Generate attempts based on users (including retakes)
+            const attempts = [];
+            allUsers.forEach(user => {
+                // First attempt
+                if (user.status !== 'not-sent') {
+                    attempts.push({
+                        candidateEmail: user.email,
+                        startedAt: user.inviteSentAt ? new Date(user.inviteSentAt.getTime() + Math.random() * 86400000) : new Date(),
+                        status: user.status === 'complete' ? 'completed' : (user.status === 'in-progress' ? 'in-progress' : 'completed'),
+                        examVersion: 'V5',
+                        result: user.status === 'complete' ? (Math.random() > 0.5 ? 'PASS' : 'FAILED') : 'FAILED',
+                        score: user.status === 'complete' ? Math.floor(Math.random() * 100) : 0,
+                        timeTaken: Math.floor(Math.random() * 3000) + 30
+                    });
+                }
+                
+                // Add retakes for some users (simulate retakes)
+                if (user.status === 'complete' && Math.random() > 0.7) {
+                    const retakeCount = Math.floor(Math.random() * 3) + 1;
+                    for (let i = 0; i < retakeCount; i++) {
+                        attempts.push({
+                            candidateEmail: user.email,
+                            startedAt: new Date(user.inviteSentAt.getTime() + (i + 1) * 86400000 * 2),
+                            status: i === retakeCount - 1 && Math.random() > 0.5 ? 'in-progress' : 'completed',
+                            examVersion: 'V5',
+                            result: i === retakeCount - 1 && Math.random() > 0.5 ? 'IN_PROGRESS' : (Math.random() > 0.5 ? 'PASS' : 'FAILED'),
+                            score: Math.floor(Math.random() * 100),
+                            timeTaken: Math.floor(Math.random() * 3000) + 30
+                        });
+                    }
+                }
+            });
+            
+            // Add some archived and incomplete attempts
+            attempts.forEach((attempt, index) => {
+                if (index % 20 === 0 && attempt.status === 'in-progress') {
+                    attempt.status = 'archived';
+                } else if (index % 15 === 0 && attempt.status === 'completed' && attempt.result === 'FAILED') {
+                    attempt.status = 'incomplete';
+                }
+            });
+            
+            return attempts;
+        }
+
+        let allAttempts = [];
+        let filteredAttempts = [];
+
+        function updateAttemptStats() {
+            const stats = {
+                total: filteredAttempts.length,
+                inProgress: 0,
+                completed: 0,
+                archived: 0,
+                incomplete: 0,
+                passed: 0
+            };
+
+            filteredAttempts.forEach(attempt => {
+                if (attempt.status === 'in-progress') stats.inProgress++;
+                else if (attempt.status === 'completed') {
+                    stats.completed++;
+                    if (attempt.result === 'PASS') stats.passed++;
+                }
+                else if (attempt.status === 'archived') stats.archived++;
+                else if (attempt.status === 'incomplete') stats.incomplete++;
+            });
+
+            document.getElementById('statTotalAttempts').textContent = stats.total;
+            document.getElementById('statInProgressAttempts').textContent = stats.inProgress;
+            document.getElementById('statCompletedAttempts').textContent = stats.completed;
+            document.getElementById('statArchivedAttempts').textContent = stats.archived;
+            document.getElementById('statIncompleteAttempts').textContent = stats.incomplete;
+            
+            const passPercent = stats.completed > 0 ? Math.round((stats.passed / stats.completed) * 100) : 0;
+            document.getElementById('statPassPercent').textContent = `${passPercent}%`;
+        }
+
+        // Format time taken
+        function formatTimeTaken(seconds) {
+            if (seconds < 60) {
+                return `${seconds}s`;
+            } else if (seconds < 3600) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${minutes}m ${secs}s`;
+            } else {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                return `${hours}h ${minutes}m`;
+            }
+        }
+
+        // Format date for "Started at" column
+        function formatStartedAt(date) {
+            if (!date) return '';
+            const day = date.getDate();
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const year = date.getFullYear();
+            
+            let daySuffix;
+            if (day === 1 || day === 21 || day === 31) daySuffix = 'st';
+            else if (day === 2 || day === 22) daySuffix = 'nd';
+            else if (day === 3 || day === 23) daySuffix = 'rd';
+            else daySuffix = 'th';
+            
+            return `${day}${daySuffix} ${monthNames[date.getMonth()]} ${year}`;
+        }
+
+        // Render attempt table
+        function renderAttemptTable() {
+            const tbody = document.getElementById('attemptTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // Show first 10 attempts
+            const displayAttempts = filteredAttempts.slice(0, 10);
+            
+            displayAttempts.forEach(attempt => {
+                const row = document.createElement('tr');
+                
+                const statusText = {
+                    'in-progress': 'IN PROGRESS',
+                    'completed': 'COMPLETE',
+                    'archived': 'ARCHIVED',
+                    'incomplete': 'INCOMPLETE'
+                }[attempt.status] || attempt.status.toUpperCase();
+                
+                const resultText = attempt.result || 'FAILED';
+                const resultClass = resultText === 'PASS' ? 'status-complete' : 'status-not-sent';
+                
+                row.innerHTML = `
+                    <td>${attempt.candidateEmail}</td>
+                    <td>${formatStartedAt(attempt.startedAt)}</td>
+                    <td><span class="status-badge ${attempt.status === 'completed' ? 'status-sent' : 'status-not-sent'}">${statusText}</span></td>
+                    <td>${attempt.examVersion}</td>
+                    <td><span class="status-badge ${resultClass}">${resultText}</span></td>
+                    <td>${attempt.score}</td>
+                    <td>${formatTimeTaken(attempt.timeTaken)}</td>
+                    <td>
+                        <button class="action-btn" style="padding: 4px 8px; font-size: 11px;" title="Copy Attempt ID">📋</button>
+                    </td>
+                    <td>
+                        <button class="action-btn" style="padding: 4px 8px; font-size: 11px;" title="View Details">👁</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Page navigation
+            document.getElementById('navUserManagement').addEventListener('click', () => {
+                switchPage('userManagement');
+            });
+            document.getElementById('navAttemptManagement').addEventListener('click', () => {
+                switchPage('attemptManagement');
+            });
+
+            // Info button tooltip for Total Attempts (Attempt Management)
+            const totalAttemptsInfoBtn = document.getElementById('totalAttemptsInfo');
+            const totalAttemptsTooltip = document.getElementById('totalAttemptsTooltip');
+            if (totalAttemptsInfoBtn && totalAttemptsTooltip) {
+                totalAttemptsInfoBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    totalAttemptsTooltip.classList.toggle('show');
+                });
+                
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.info-btn') && !e.target.closest('.tooltip')) {
+                        totalAttemptsTooltip.classList.remove('show');
+                    }
+                });
+            }
+
+            // Info button tooltip for Archived Attempts (Attempt Management)
+            const archivedAttemptsInfoBtn = document.getElementById('archivedAttemptsInfo');
+            const archivedAttemptsTooltip = document.getElementById('archivedAttemptsTooltip');
+            if (archivedAttemptsInfoBtn && archivedAttemptsTooltip) {
+                archivedAttemptsInfoBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const rect = archivedAttemptsInfoBtn.getBoundingClientRect();
+                    archivedAttemptsTooltip.style.bottom = `${window.innerHeight - rect.top + 8}px`;
+                    archivedAttemptsTooltip.style.left = `${rect.left}px`;
+                    archivedAttemptsTooltip.classList.toggle('show');
+                });
+                
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.info-btn') && !e.target.closest('.tooltip')) {
+                        archivedAttemptsTooltip.classList.remove('show');
+                    }
+                });
+            }
+
+            // Info button tooltip for Attempt In Progress
+            const infoBtn = document.getElementById('attemptInProgressInfo');
+            const tooltip = document.getElementById('attemptInProgressTooltip');
+            if (infoBtn && tooltip) {
+                infoBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const rect = infoBtn.getBoundingClientRect();
+                    tooltip.style.bottom = `${window.innerHeight - rect.top + 8}px`;
+                    tooltip.style.left = `${rect.left}px`;
+                    tooltip.classList.toggle('show');
+                });
+                
+                // Close tooltip when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.info-btn') && !e.target.closest('.tooltip')) {
+                        tooltip.classList.remove('show');
+                    }
+                });
+            }
+
+            // Info button tooltip for Attempt Complete
+            const attemptCompleteInfoBtn = document.getElementById('attemptCompleteInfo');
+            const attemptCompleteTooltip = document.getElementById('attemptCompleteTooltip');
+            if (attemptCompleteInfoBtn && attemptCompleteTooltip) {
+                attemptCompleteInfoBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const rect = attemptCompleteInfoBtn.getBoundingClientRect();
+                    attemptCompleteTooltip.style.bottom = `${window.innerHeight - rect.top + 8}px`;
+                    attemptCompleteTooltip.style.left = `${rect.left}px`;
+                    attemptCompleteTooltip.classList.toggle('show');
+                });
+                
+                // Close tooltip when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.info-btn') && !e.target.closest('.tooltip')) {
+                        attemptCompleteTooltip.classList.remove('show');
+                    }
+                });
+            }
+
+            // Three-dot menu
+            const threeDotMenu = document.getElementById('threeDotMenu');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            
+            if (threeDotMenu && dropdownMenu) {
+                threeDotMenu.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.three-dot-menu') && !e.target.closest('.dropdown-menu')) {
+                        dropdownMenu.classList.remove('show');
+                    }
+                });
+            }
+
+            // Invite user functionality
+            const addUsersInput = document.getElementById('addUsersInput');
+            
+            function handleInvite() {
+                const email = addUsersInput.value.trim();
+                if (email && isValidEmail(email)) {
+                    // Add user to the list
+                    const newUser = {
+                        email: email,
+                        inviteBy: 'Sahil',
+                        status: 'sent',
+                        inviteSentAt: new Date(),
+                        reinviteCount: 0
+                    };
+                    allUsers.push(newUser);
+                    filteredUsers = [...allUsers];
+                    addUsersInput.value = '';
+                    updateUserCount();
+                    updateStats();
+                    renderTable();
+                    showToast(`Invite sent to ${email}`);
+                } else if (email) {
+                    showToast('Please enter a valid email address', true);
+                }
+            }
+
+            addUsersInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleInvite();
+                }
+            });
+
+            // Upload CSV button
+            document.getElementById('uploadCsvBtn').addEventListener('click', () => {
+                showToast('CSV upload functionality would open file picker here', false);
+                // In real implementation, this would trigger file picker
+            });
+
+            // Filter already added users (PMUS01 - new feature)
+            document.getElementById('filterUsersInput').addEventListener('input', (e) => {
+                applyFilters();
+            });
+
+            // Status filter
+            document.getElementById('statusFilter').addEventListener('change', () => {
+                applyFilters();
+            });
+
+            // Sort by Invite Sent At
+            const sortInviteDateHeader = document.getElementById('sortInviteDate');
+            if (sortInviteDateHeader) {
+                sortInviteDateHeader.addEventListener('click', () => {
+                    if (sortColumn === 'inviteSentAt') {
+                        // Toggle direction
+                        sortDirection = sortDirection === 'desc' ? 'asc' : 'desc';
+                    } else {
+                        // First click - set to descending
+                        sortColumn = 'inviteSentAt';
+                        sortDirection = 'desc';
+                    }
+                    
+                    // Update visual indicator
+                    sortInviteDateHeader.className = `sortable sort-${sortDirection}`;
+                    
+                    sortUsers();
+                    renderTable();
+                });
+            }
+
+            function applyFilters() {
+                const searchTerm = document.getElementById('filterUsersInput').value.toLowerCase().trim();
+                const statusFilter = document.getElementById('statusFilter').value;
+                
+                filteredUsers = allUsers.filter(user => {
+                    const matchesSearch = searchTerm.length < 3 || user.email.toLowerCase().includes(searchTerm);
+                    const matchesStatus = !statusFilter || statusFilter === 'all' || user.status === statusFilter;
+                    return matchesSearch && matchesStatus;
+                });
+                
+                currentPage = 1;
+                // Apply sorting if active
+                if (sortColumn) {
+                    sortUsers();
+                }
+                updateUserCount();
+                updateStats();
+                renderTable();
+            }
+
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            // Pagination limit change
+            document.getElementById('pageLimit').addEventListener('change', (e) => {
+                pageLimit = parseInt(e.target.value);
+                currentPage = 1;
+                renderTable();
+            });
+
+            // Pagination buttons
+            document.getElementById('prevPage').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+
+            document.getElementById('nextPage').addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredUsers.length / pageLimit);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+
+            // Select all checkbox
+            document.getElementById('selectAll').addEventListener('change', (e) => {
+                const checked = e.target.checked;
+                const startIndex = (currentPage - 1) * pageLimit;
+                const endIndex = Math.min(startIndex + pageLimit, filteredUsers.length);
+                
+                for (let i = startIndex; i < endIndex; i++) {
+                    if (checked) {
+                        selectedUsers.add(filteredUsers[i].email);
+                    } else {
+                        selectedUsers.delete(filteredUsers[i].email);
+                    }
+                }
+                updateSelectionCount();
+                renderTable();
+            });
+
+            // Invite actions (PMUS04)
+            document.getElementById('inviteSelected').addEventListener('click', () => {
+                if (selectedUsers.size === 0) {
+                    showToast('Please select at least one user', true);
+                    return;
+                }
+                showModal(
+                    'Send Invites to Selected Users',
+                    `You are about to send invites to ${selectedUsers.size} selected user(s). Continue?`,
+                    () => {
+                        showToast(`Invites sent to ${selectedUsers.size} user(s) successfully!`);
+                        selectedUsers.clear();
+                        updateSelectionCount();
+                        updateStats();
+                        renderTable();
+                    }
+                );
+            });
+
+            document.getElementById('inviteAllUninvited').addEventListener('click', () => {
+                const uninvitedCount = filteredUsers.filter(u => u.status === 'not-sent').length;
+                if (uninvitedCount === 0) {
+                    showToast('No uninvited users found', true);
+                    return;
+                }
+                showModal(
+                    'Send Invites to All Uninvited Users',
+                    `You are about to send invites to ${uninvitedCount} uninvited user(s). This action will send invites to all users with "INVITE NOT SENT" status. Continue?`,
+                    () => {
+                        // Update status for uninvited users
+                        const now = new Date();
+                        filteredUsers.forEach(user => {
+                            if (user.status === 'not-sent') {
+                                user.status = 'sent';
+                                user.inviteSentAt = now;
+                            }
+                        });
+                        allUsers.forEach(user => {
+                            if (user.status === 'not-sent') {
+                                user.status = 'sent';
+                                user.inviteSentAt = now;
+                            }
+                        });
+                        showToast(`Invites sent to ${uninvitedCount} user(s) successfully!`);
+                        updateStats();
+                        renderTable();
+                    }
+                );
+            });
+
+            // Export actions (PMUS03)
+            document.getElementById('exportSelected').addEventListener('click', () => {
+                if (selectedUsers.size === 0) {
+                    showToast('Please select at least one user to export', true);
+                    return;
+                }
+                const usersToExport = filteredUsers.filter(u => selectedUsers.has(u.email));
+                exportToCSV(usersToExport, 'selected_users');
+                showToast('Export completed successfully!');
+            });
+
+            document.getElementById('exportAll').addEventListener('click', () => {
+                exportToCSV(filteredUsers, 'all_users');
+                showToast('Export completed successfully!');
+            });
+
+            // Modal buttons
+            document.getElementById('cancelBtn').addEventListener('click', () => {
+                document.getElementById('confirmModal').classList.remove('show');
+            });
+
+            document.getElementById('confirmBtn').addEventListener('click', () => {
+                const confirmAction = document.getElementById('confirmBtn').dataset.action;
+                if (confirmAction) {
+                    eval(confirmAction);
+                }
+                document.getElementById('confirmModal').classList.remove('show');
+            });
+        }
+
+        // Sort function
+        function sortUsers() {
+            if (sortColumn === 'inviteSentAt') {
+                filteredUsers.sort((a, b) => {
+                    const dateA = a.inviteSentAt ? new Date(a.inviteSentAt).getTime() : 0;
+                    const dateB = b.inviteSentAt ? new Date(b.inviteSentAt).getTime() : 0;
+                    if (sortDirection === 'desc') {
+                        return dateB - dateA; // Newest first
+                    } else {
+                        return dateA - dateB; // Oldest first
+                    }
+                });
+            }
+        }
+
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('userTableBody');
+            if (!tbody) {
+                console.error('Table body not found');
+                return;
+            }
+            
+            // Apply sorting if active
+            if (sortColumn) {
+                sortUsers();
+            }
+            
+            const startIndex = (currentPage - 1) * pageLimit;
+            const endIndex = Math.min(startIndex + pageLimit, filteredUsers.length);
+            const pageUsers = filteredUsers.slice(startIndex, endIndex);
+
+            console.log('Rendering table with', pageUsers.length, 'users on page', currentPage, 'of', Math.ceil(filteredUsers.length / pageLimit));
+            tbody.innerHTML = '';
+
+            pageUsers.forEach(user => {
+                const row = document.createElement('tr');
+                const isSelected = selectedUsers.has(user.email);
+                
+                const statusClass = {
+                    'complete': 'status-complete',
+                    'sent': 'status-sent',
+                    'not-sent': 'status-not-sent',
+                    'in-progress': 'status-sent'
+                }[user.status] || 'status-sent';
+
+                const statusText = {
+                    'complete': 'ATTEMPT COMPLETE',
+                    'sent': 'INVITE SENT',
+                    'not-sent': 'INVITE NOT SENT',
+                    'in-progress': 'ATTEMPT IN PROGRESS'
+                }[user.status] || 'UNKNOWN';
+
+                // Generate action column content
+                let actionContent = '';
+                if (user.status === 'not-sent') {
+                    actionContent = `
+                        <button class="action-btn" onclick="handleSendInvite('${user.email}')">Send Invite</button>
+                        <button class="action-remove" onclick="handleRemoveUser('${user.email}')" title="Remove user">×</button>
+                    `;
+                } else if (user.status === 'complete') {
+                    actionContent = `
+                        <button class="action-btn-reinvite" onclick="handleReinvite('${user.email}')">Re-invite</button>
+                    `;
+                } else if (user.status === 'sent' || user.status === 'in-progress') {
+                    actionContent = `
+                        <button class="action-remove" onclick="handleRemoveUser('${user.email}')" title="Remove user">×</button>
+                    `;
+                }
+
+                row.innerHTML = `
+                    <td><input type="checkbox" class="user-checkbox" data-email="${user.email}" ${isSelected ? 'checked' : ''} /></td>
+                    <td>${user.email}</td>
+                    <td>${user.inviteBy}</td>
+                    <td>${formatDate(user.inviteSentAt)}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${actionContent}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Add checkbox listeners
+            tbody.querySelectorAll('.user-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const email = e.target.dataset.email;
+                    if (e.target.checked) {
+                        selectedUsers.add(email);
+                    } else {
+                        selectedUsers.delete(email);
+                    }
+                    updateSelectAllCheckbox();
+                    updateSelectionCount();
+                });
+            });
+
+            // Update pagination
+            updatePagination();
+            updateSelectAllCheckbox();
+            updateSelectionCount();
+        }
+
+        // Show modal
+        function showModal(title, body, onConfirm) {
+            document.getElementById('modalTitle').textContent = title;
+            const modalBody = document.getElementById('modalBody');
+            // Check if body contains HTML (for re-invite modal)
+            if (body.includes('<')) {
+                modalBody.innerHTML = body;
+            } else {
+                modalBody.textContent = body;
+            }
+            document.getElementById('confirmBtn').dataset.action = `(${onConfirm.toString()})()`;
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        // Show toast
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.className = `toast ${isError ? 'error' : ''} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Handle send invite for individual user
+        function handleSendInvite(email) {
+            const user = allUsers.find(u => u.email === email);
+            if (user && user.status === 'not-sent') {
+                user.status = 'sent';
+                user.inviteSentAt = new Date();
+                // Update in filteredUsers too
+                const filteredUser = filteredUsers.find(u => u.email === email);
+                if (filteredUser) {
+                    filteredUser.status = 'sent';
+                    filteredUser.inviteSentAt = new Date();
+                }
+                updateStats();
+                renderTable();
+                showToast(`Invite sent to ${email}`);
+            }
+        }
+
+        // Handle remove user
+        function handleRemoveUser(email) {
+            if (confirm(`Are you sure you want to remove ${email} from this exam?`)) {
+                allUsers = allUsers.filter(u => u.email !== email);
+                filteredUsers = filteredUsers.filter(u => u.email !== email);
+                selectedUsers.delete(email);
+                updateUserCount();
+                updateStats();
+                updateSelectionCount();
+                renderTable();
+                showToast(`User ${email} removed`);
+            }
+        }
+
+        // Handle re-invite for user (PMUS06)
+        function handleReinvite(email) {
+            const user = allUsers.find(u => u.email === email);
+            const filteredUser = filteredUsers.find(u => u.email === email);
+            
+            if (!user || user.status !== 'complete') {
+                showToast('Re-invite is only available for users with "Attempt Complete" status', true);
+                return;
+            }
+
+            const reinviteCount = user.reinviteCount || 0;
+            const reinviteCountText = reinviteCount > 0 
+                ? `<p><strong>Re-invite History:</strong> This user has been re-invited ${reinviteCount} time${reinviteCount > 1 ? 's' : ''}.</p>` 
+                : '';
+
+            const modalBody = `
+                <p><strong>User:</strong> ${email}</p>
+                <p><strong>Current Status:</strong> Attempt Complete</p>
+                ${reinviteCountText}
+                <p>Re-inviting will create a new invite ID and allow the user to take additional attempts. The user's status will change to "Invite Sent". Previous attempts will remain visible for historical purposes.</p>
+            `;
+
+            showModal(
+                'Re-invite User',
+                modalBody,
+                () => {
+                    // Create new invite ID (simulated by updating invite date)
+                    const now = new Date();
+                    
+                    // Increment reinvite count
+                    user.reinviteCount = (user.reinviteCount || 0) + 1;
+                    if (filteredUser) {
+                        filteredUser.reinviteCount = user.reinviteCount;
+                    }
+                    
+                    // Update status to 'sent' and set new invite date
+                    user.status = 'sent';
+                    user.inviteSentAt = now;
+                    if (filteredUser) {
+                        filteredUser.status = 'sent';
+                        filteredUser.inviteSentAt = now;
+                    }
+                    
+                    // Log re-invite action (in real implementation, this would be sent to backend)
+                    console.log(`Re-invite action logged:`, {
+                        userEmail: email,
+                        timestamp: now.toISOString(),
+                        reinviteCount: user.reinviteCount,
+                        oldStatus: 'complete',
+                        newStatus: 'sent'
+                    });
+                    
+                    updateStats();
+                    renderTable();
+                    showToast(`Re-invite sent to ${email}. User can now take additional attempts.`);
+                }
+            );
+        }
+
+        // Export to CSV (PMUS03)
+        function exportToCSV(users, filename) {
+            const headers = ['User Email Id', 'Invite By', 'Invite Sent At', 'Status'];
+            const rows = users.map(user => {
+                const statusText = {
+                    'complete': 'ATTEMPT COMPLETE',
+                    'sent': 'INVITE SENT',
+                    'not-sent': 'INVITE NOT SENT',
+                    'in-progress': 'ATTEMPT IN PROGRESS'
+                }[user.status] || 'UNKNOWN';
+                return [user.email, user.inviteBy, formatDate(user.inviteSentAt), statusText];
+            });
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Evaluation_Invite_Status_${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
