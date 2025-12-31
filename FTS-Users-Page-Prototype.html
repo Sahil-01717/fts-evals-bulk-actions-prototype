@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTS - Users Page Prototype</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .console-title {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .header-right {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .back-link {
+            font-size: 14px;
+            color: #666;
+            text-decoration: none;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        .project-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            color: #7B2CBF;
+            border-bottom-color: #7B2CBF;
+            font-weight: 500;
+        }
+
+        /* Sub Navigation */
+        .sub-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .sub-nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .sub-nav-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .sub-nav-btn.active {
+            background-color: #7B2CBF;
+            color: white;
+            border-color: #7B2CBF;
+        }
+
+        .sub-nav-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .sub-nav-actions > * {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Add Users Section */
+        .add-users-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .add-users-input {
+            width: 300px;
+            padding: 10px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            height: 40px;
+        }
+
+        .add-users-input:focus {
+            outline: none;
+            border-color: #7B2CBF;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+            height: 40px;
+        }
+
+        .download-btn {
+            background-color: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+
+        .download-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .upload-btn {
+            background-color: #7B2CBF;
+            color: white;
+        }
+
+        .upload-btn:hover {
+            background-color: #6A1B9A;
+        }
+
+        /* Table Header Zone */
+        .table-header-zone {
+            background-color: #f9f9f9;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .table-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .table-filters {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 250px;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #7B2CBF;
+        }
+
+        /* Table */
+        .table-wrapper {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f9f9f9;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 24px;
+        }
+
+        th.sortable:hover {
+            background-color: #f0f0f0;
+        }
+
+        .sort-indicator {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #7B2CBF;
+        }
+
+        .sort-indicator::after {
+            content: '▼';
+        }
+
+        th.sortable.sort-asc .sort-indicator::after {
+            content: '▲';
+        }
+
+        th.sortable.sort-desc .sort-indicator::after {
+            content: '▼';
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #7B2CBF;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background-color: #f5f5f5;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-page {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pagination-limit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .limit-dropdown {
+            padding: 6px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .empty-cell {
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <div>
+                <div class="logo">TELUS International</div>
+                <div class="console-title">FT Studio Console</div>
+            </div>
+        </div>
+        <div class="header-right">
+            Sahil Choudhary ▼
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <a href="#" class="back-link">← Back to Projects</a>
+        <div class="project-title">Testing_Project</div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab">Workflows</button>
+            <button class="tab active">Users</button>
+            <button class="tab">Tags</button>
+            <button class="tab">Project Settings</button>
+        </div>
+
+        <!-- Sub Navigation -->
+        <div class="sub-nav">
+            <div class="sub-nav-buttons">
+                <button class="sub-nav-btn active">User list</button>
+                <button class="sub-nav-btn">Groups</button>
+            </div>
+            <div class="sub-nav-actions">
+                <div class="add-users-section">
+                    <input 
+                        type="text" 
+                        class="add-users-input" 
+                        placeholder="Search and add email id"
+                        id="addUsersInput"
+                    />
+                </div>
+                <button class="action-btn download-btn">Download User List</button>
+                <button class="action-btn upload-btn">Upload CSV</button>
+            </div>
+        </div>
+
+        <!-- Table with Header Zone -->
+        <div class="table-wrapper">
+            <!-- Table Header Zone with Filters -->
+            <div class="table-header-zone">
+                <div class="table-header-top">
+                    <div class="table-title">Users Added</div>
+                    <div class="table-filters">
+                        <input 
+                            type="text" 
+                            class="filter-input" 
+                            placeholder="Filter by email…"
+                            id="filterUsersInput"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Email ID</th>
+                            <th>User ID</th>
+                            <th class="sortable" id="sortInviteDate">
+                                Invite Sent At
+                                <span class="sort-indicator"></span>
+                            </th>
+                            <th>Skills</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <!-- Users will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <div class="pagination-controls">
+                <button class="pagination-btn" id="prevPage" disabled>←</button>
+                <span class="pagination-page">Page <span id="currentPage">1</span></span>
+                <button class="pagination-btn" id="nextPage">→</button>
+            </div>
+            <div class="pagination-limit">
+                <span>Show</span>
+                <select class="limit-dropdown" id="pageLimit">
+                    <option value="10">10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="500" selected>500</option>
+                    <option value="1000">1000</option>
+                    <option value="2000">2000</option>
+                </select>
+                <span>per page</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Helper function to format date as "1st December 2025"
+        function formatDate(date) {
+            if (!date) return '--';
+            // Handle both Date objects and date strings
+            const dateObj = date instanceof Date ? date : new Date(date);
+            if (isNaN(dateObj.getTime())) return '--';
+            
+            const day = dateObj.getDate();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const year = dateObj.getFullYear();
+            
+            let daySuffix;
+            if (day === 1 || day === 21 || day === 31) daySuffix = 'st';
+            else if (day === 2 || day === 22) daySuffix = 'nd';
+            else if (day === 3 || day === 23) daySuffix = 'rd';
+            else daySuffix = 'th';
+            
+            return `${day}${daySuffix} ${monthNames[dateObj.getMonth()]} ${year}`;
+        }
+
+        // Generate random date within last 30 days
+        function getRandomInviteDate() {
+            const daysAgo = Math.floor(Math.random() * 30);
+            const date = new Date();
+            date.setDate(date.getDate() - daysAgo);
+            return date;
+        }
+
+        // Generate realistic user data
+        function generateUserData(count) {
+            const firstNames = ['mridul', 'raj', 'eejya', 'ajinkya', 'kethineni', 'karan', 'n', 'ankit', 
+                              'sagnik', 'priya', 'rahul', 'neha', 'arjun', 'kavya', 'vikram', 'ananya', 
+                              'rohan', 'divya', 'aditya', 'meera', 'sneha', 'varun', 'pooja', 'nitin',
+                              'swati', 'amit', 'deepika', 'suresh', 'kiran', 'mohit', 'radha', 'ajay',
+                              'nisha', 'vivek', 'shreya', 'manoj', 'tanvi', 'gaurav', 'ritu', 'harsh',
+                              'isha', 'yash', 'pallavi', 'siddharth', 'anjali', 'akash', 'sonia', 'pranav'];
+            
+            const lastNames = ['pant', 'gorhe', 'singh', 'bakshi', 'rajesh', 'mehta', 'srimanthreddy', 
+                            'mundada01', 'paul', 'sharma', 'patel', 'kumar', 'reddy', 'nair', 'rao', 'desai',
+                            'jain', 'gupta', 'verma', 'tiwari', 'mishra', 'shah', 'kapoor', 'agarwal',
+                            'malhotra', 'bansal', 'goyal', 'chopra', 'saxena', 'trivedi', 'joshi'];
+            
+            const sampleUsers = [];
+            
+            // Add specific users from screenshot
+            sampleUsers.push(
+                { email: 'mridul.pant@telusinternational.com', userId: '0bc593c2-8d05-4b3b-9be4-3547890eb741', tagsEnabled: true, inviteSentAt: getRandomInviteDate() },
+                { email: 'raj.gorhe@telusinternational.com', userId: 'dea22617-e90a-4e03-bc20-bc85cc314768', tagsEnabled: false, inviteSentAt: getRandomInviteDate() },
+                { email: 'eejya.singh@telusinternational.com', userId: 'dfb1e9a0-76a8-4059-8c06-dad86ed50dc3', tagsEnabled: true, inviteSentAt: getRandomInviteDate() },
+                { email: 'ajinkya.bakshi+nvidia2@telusinternational.com', userId: '6661972c-6dbe-450d-a8fc-9acadf8df670', tagsEnabled: true, inviteSentAt: getRandomInviteDate() },
+                { email: 'kethineni.rajesh@telusinternational.com', userId: '9f3e418b-079c-44de-b20c-2f1b3433560c', tagsEnabled: true, inviteSentAt: getRandomInviteDate() },
+                { email: 'karan.mehta@telusinternational.com', userId: '3963bbc4-5979-4ef5-a1aa-50d330d41a2e', tagsEnabled: true, inviteSentAt: getRandomInviteDate() },
+                { email: 'n.srimanthreddy@telusinternational.com', userId: '21b744c2-a1e4-4b4e-b9e6-ca5648d23fe1', tagsEnabled: true, inviteSentAt: getRandomInviteDate() },
+                { email: 'ankit.mundada01@telusinternational.com', userId: 'af28d94d-0cf2-43c5-b149-bf82d9ace8ba', tagsEnabled: true, inviteSentAt: getRandomInviteDate() },
+                { email: 'sagnik.paul@telusinternational.com', userId: '07b6a8ea-24ba-4c96-8b03-27308ab6001c', tagsEnabled: true, inviteSentAt: getRandomInviteDate() }
+            );
+            
+            // Generate remaining users
+            const usedEmails = new Set(sampleUsers.map(u => u.email));
+            
+            function generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0;
+                    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            
+            for (let i = sampleUsers.length; i < count; i++) {
+                let email;
+                let attempts = 0;
+                do {
+                    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+                    const numSuffix = Math.random() > 0.7 ? Math.floor(Math.random() * 100) : '';
+                    email = `${firstName}.${lastName}${numSuffix}@telusinternational.com`;
+                    attempts++;
+                } while (usedEmails.has(email) && attempts < 10);
+                
+                if (usedEmails.has(email)) {
+                    email = `user${i}@telusinternational.com`;
+                }
+                usedEmails.add(email);
+                
+                sampleUsers.push({
+                    email: email,
+                    userId: generateUUID(),
+                    tagsEnabled: Math.random() > 0.3,
+                    inviteSentAt: getRandomInviteDate()
+                });
+            }
+            
+            return sampleUsers;
+        }
+        
+        const sampleUsers = generateUserData(500);
+
+        let allUsers = [];
+        let filteredUsers = [];
+        let currentPage = 1;
+        let pageLimit = 500;
+        let selectedUsers = new Set();
+        let sortColumn = null; // 'inviteSentAt' or null
+        let sortDirection = 'desc'; // 'asc' or 'desc'
+
+        // Initialize data first
+        allUsers = [...sampleUsers];
+        filteredUsers = [...sampleUsers];
+
+        // Helper functions
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredUsers.length / pageLimit);
+            const currentPageEl = document.getElementById('currentPage');
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            
+            if (currentPageEl) currentPageEl.textContent = currentPage;
+            if (prevBtn) prevBtn.disabled = currentPage === 1;
+            if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+        }
+
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('userTableBody');
+            if (!tbody) {
+                console.error('Table body not found');
+                return;
+            }
+            
+            const startIndex = (currentPage - 1) * pageLimit;
+            const endIndex = Math.min(startIndex + pageLimit, filteredUsers.length);
+            const pageUsers = filteredUsers.slice(startIndex, endIndex);
+
+            console.log('Rendering table with', pageUsers.length, 'users on page', currentPage, 'of', Math.ceil(filteredUsers.length / pageLimit));
+            tbody.innerHTML = '';
+
+            pageUsers.forEach((user, index) => {
+                const row = document.createElement('tr');
+                const rowIndex = startIndex + index;
+                
+                row.innerHTML = `
+                    <td>${user.email}</td>
+                    <td>${user.userId}</td>
+                    <td>${formatDate(user.inviteSentAt)}</td>
+                    <td class="empty-cell">--</td>
+                    <td>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="tag-toggle" data-email="${user.email}" ${user.tagsEnabled ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Add toggle listeners
+            tbody.querySelectorAll('.tag-toggle').forEach(toggle => {
+                toggle.addEventListener('change', (e) => {
+                    const email = e.target.dataset.email;
+                    const user = allUsers.find(u => u.email === email);
+                    const filteredUser = filteredUsers.find(u => u.email === email);
+                    if (user) {
+                        user.tagsEnabled = e.target.checked;
+                    }
+                    if (filteredUser) {
+                        filteredUser.tagsEnabled = e.target.checked;
+                    }
+                });
+            });
+
+            // Update pagination
+            updatePagination();
+        }
+
+        // Sort function
+        function sortUsers() {
+            if (sortColumn === 'inviteSentAt') {
+                filteredUsers.sort((a, b) => {
+                    const dateA = a.inviteSentAt ? new Date(a.inviteSentAt).getTime() : 0;
+                    const dateB = b.inviteSentAt ? new Date(b.inviteSentAt).getTime() : 0;
+                    if (sortDirection === 'desc') {
+                        return dateB - dateA; // Newest first
+                    } else {
+                        return dateA - dateB; // Oldest first
+                    }
+                });
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Sort by Invite Sent At
+            document.getElementById('sortInviteDate').addEventListener('click', () => {
+                if (sortColumn === 'inviteSentAt') {
+                    // Toggle direction
+                    sortDirection = sortDirection === 'desc' ? 'asc' : 'desc';
+                } else {
+                    // First click - set to descending
+                    sortColumn = 'inviteSentAt';
+                    sortDirection = 'desc';
+                }
+                
+                // Update visual indicator
+                const header = document.getElementById('sortInviteDate');
+                header.className = `sortable sort-${sortDirection}`;
+                
+                sortUsers();
+                renderTable();
+            });
+
+            // Add users input (placeholder - would search DB)
+            document.getElementById('addUsersInput').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                if (searchTerm.length >= 3) {
+                    console.log('Searching DB for users:', searchTerm);
+                    // In real implementation, this would call an API to search users
+                    // and show results that can be selected to add to the project
+                }
+            });
+
+            // Filter users by email (PMUS02)
+            document.getElementById('filterUsersInput').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                if (searchTerm.length >= 3) {
+                    filteredUsers = allUsers.filter(user => 
+                        user.email.toLowerCase().includes(searchTerm)
+                    );
+                } else {
+                    filteredUsers = [...allUsers];
+                }
+                currentPage = 1;
+                if (sortColumn) {
+                    sortUsers();
+                }
+                renderTable();
+            });
+
+            // Pagination limit change
+            document.getElementById('pageLimit').addEventListener('change', (e) => {
+                pageLimit = parseInt(e.target.value);
+                currentPage = 1;
+                renderTable();
+            });
+
+            // Pagination buttons
+            document.getElementById('prevPage').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+
+            document.getElementById('nextPage').addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredUsers.length / pageLimit);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+
+            // Download User List
+            document.querySelector('.download-btn').addEventListener('click', () => {
+                exportToCSV(filteredUsers, 'user_list');
+            });
+
+            // Upload CSV
+            document.querySelector('.upload-btn').addEventListener('click', () => {
+                console.log('CSV upload functionality would open file picker here');
+            });
+        }
+
+        // Export to CSV
+        function exportToCSV(users, filename) {
+            const headers = ['User Email ID', 'User ID', 'Invite Sent At', 'Skills', 'Tags'];
+            const rows = users.map(user => {
+                return [
+                    user.email,
+                    user.userId,
+                    formatDate(user.inviteSentAt),
+                    '',
+                    user.tagsEnabled ? 'Enabled' : 'Disabled'
+                ];
+            });
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `User_List_${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Initialize
+        function init() {
+            console.log('Initializing with', allUsers.length, 'users');
+            renderTable();
+            setupEventListeners();
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
